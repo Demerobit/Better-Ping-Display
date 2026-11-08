@@ -1,9 +1,7 @@
 // HEAD injection on Screen::draw — stash per-row ping ms values before the draw loop.
 fn inject(screen_self: &Screen) {
+    horizon_client_render::better_ping_display::clear_server_pings();
     if !horizon_client_render::better_ping_display::show_server_ping() {
-        horizon_client_render::better_ping_display::SERVER_ROW_PINGS.with(|cell| {
-            cell.borrow_mut().clear();
-        });
         return;
     }
     if let Screen::List { servers, pings, .. } = screen_self {
@@ -17,10 +15,6 @@ fn inject(screen_self: &Screen) {
             .collect();
         horizon_client_render::better_ping_display::SERVER_ROW_PINGS.with(|cell| {
             *cell.borrow_mut() = row_pings;
-        });
-    } else {
-        horizon_client_render::better_ping_display::SERVER_ROW_PINGS.with(|cell| {
-            cell.borrow_mut().clear();
         });
     }
 }

@@ -48,7 +48,7 @@ bindings = [
   { name = "screen_self", ty = "&Screen", value = "self" },
 ]
 
-# RETURN on draw_server_icon: draw numeric ping text for the row.
+# RETURN on draw_server_icon: map row y coordinate to ping ms.
 [[injection]]
 id = "server-icon-return"
 target = "horizon_client::multiplayer::draw_server_icon"
@@ -56,11 +56,25 @@ kind = "RETURN"
 helper = "server_return.rs"
 bindings = [
   { name = "value", ty = "()", value = "$value" },
-  { name = "atlas", ty = "&HudAtlas", value = "atlas" },
-  { name = "batch", ty = "&mut HudBatch", value = "batch" },
   { name = "slot", ty = "usize", value = "slot" },
+  { name = "y", ty = "f32", value = "y" },
+]
+
+# OVERWRITE on HudBatch::sprite_scaled: replace ping bars with colored numeric text.
+[[injection]]
+id = "server-sprite-overwrite"
+target = "horizon_client_render::hud::HudBatch::sprite_scaled"
+kind = "OVERWRITE"
+helper = "sprite_scaled.rs"
+bindings = [
+  { name = "batch", ty = "&mut HudBatch", value = "self" },
+  { name = "atlas", ty = "&HudAtlas", value = "atlas" },
+  { name = "name", ty = "&str", value = "name" },
   { name = "x", ty = "f32", value = "x" },
   { name = "y", ty = "f32", value = "y" },
+  { name = "w", ty = "f32", value = "w" },
+  { name = "h", ty = "f32", value = "h" },
+  { name = "color", ty = "u32", value = "color" },
 ]
 
 # ── Settings ──────────────────────────────────────────────────────────────────
