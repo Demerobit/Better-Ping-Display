@@ -9,9 +9,10 @@ horizon_revision = "66f3981f522b24c250b21523a70080965b940424"
 # Runtime module in horizon-client-render (shared state, ping helpers).
 [[module]]
 id = "runtime"
-file = "crates/horizon-client-render/src/tab_list.rs"
+file = "crates/horizon-client-render/src/lib.rs"
 name = "better_ping_display"
 source = "runtime.rs"
+visibility = "pub"
 
 # ── Tab list ─────────────────────────────────────────────────────────────────
 
