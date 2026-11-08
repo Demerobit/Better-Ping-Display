@@ -27,25 +27,24 @@ A native [Horizon](https://playhorizon.dev) mod that replaces ping bar icons wit
 
 ```text
 Better-Ping-Display/
-├── better_ping_display-0.1.0.hnmod          # Distribution package
-├── better_ping_display-0.1.0.hnmod.minisig  # Minisign signature
+├── better_ping_display-0.1.0.hnmod   # Distribution package
 ├── .gitignore
-├── LICENSE                                  # MIT License
-├── README.md                                # Mod documentation
-├── compatibility.json                       # Horizon revision & schema pinning
-├── package.py                               # Deterministic .hnmod packaging script
+├── LICENSE                           # MIT License
+├── README.md                         # Mod documentation
+├── compatibility.json                # Horizon revision & schema pinning
+├── package.py                        # Deterministic .hnmod packaging script
 └── mixins/
     └── better_ping_display/
-        ├── horizon-mixin.toml               # Mixin manifest (injections & module config)
-        ├── runtime.rs                       # Shared runtime state & ping formatting
-        ├── sprite_scaled.rs                 # Overwrite suppressing ping bars & drawing text
-        ├── server_head.rs                   # Pre-computing per-row ping values
-        ├── server_return.rs                 # Mapping row coordinates to ping ms
-        ├── tab_head.rs                      # Stashing player latencies in display order
-        ├── tab_return.rs                    # Replacing tab-list ping sprites with text
-        ├── mods.rs                          # Options > Mods list registration
-        ├── settings.rs                      # Mod settings toggle button definition
-        └── settings_click.rs                # Mod settings click handler
+        ├── horizon-mixin.toml        # Mixin manifest (injections & module config)
+        ├── runtime.rs                # Shared runtime state & ping formatting
+        ├── sprite_scaled.rs          # Overwrite suppressing ping bars & drawing text
+        ├── server_head.rs            # Pre-computing per-row ping values
+        ├── server_return.rs          # Mapping row coordinates to ping ms
+        ├── tab_head.rs               # Stashing player latencies in display order
+        ├── tab_return.rs             # Replacing tab-list ping sprites with text
+        ├── mods.rs                   # Options > Mods list registration
+        ├── settings.rs               # Mod settings toggle button definition
+        └── settings_click.rs         # Mod settings click handler
 ```
 
 ---
@@ -61,14 +60,10 @@ Better-Ping-Display/
 
 ---
 
-## Installation & Verification
+## Installation
 
-1. Download [`better_ping_display-0.1.0.hnmod`](better_ping_display-0.1.0.hnmod) and its signature.
+1. Download [`better_ping_display-0.1.0.hnmod`](better_ping_display-0.1.0.hnmod).
 2. Install via the Horizon Launcher's **Mods** menu or place into your Horizon mods folder.
-3. Verify the package with Minisign:
-   ```bash
-   minisign -V -P RWSFMcL2Aq41gyFqJXfhKLk4v4oB8YMy+FTg3CakQUMEu+ZeuQcwkSgv -m better_ping_display-0.1.0.hnmod
-   ```
 
 ---
 
@@ -77,11 +72,6 @@ Better-Ping-Display/
 ### Repackage `.hnmod` archive
 ```bash
 python package.py
-```
-
-### Sign with Minisign
-```bash
-minisign -S -s horizon-mods.key -m better_ping_display-0.1.0.hnmod -W
 ```
 
 ---
