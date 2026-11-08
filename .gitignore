@@ -1,0 +1,16 @@
+# Build outputs
+target/
+plan.json
+.*.lock
+
+# Mod package and signature (not committed — distributed via GitHub Releases)
+*.hnmod
+*.minisig
+
+# Private signing key
+*.key
+*.pub
+
+# Python cache
+__pycache__/
+*.pyc

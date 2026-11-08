@@ -1,0 +1,87 @@
+[mod]
+id = "better_ping_display"
+version = "0.1.0"
+priority = 100
+
+[compatibility]
+horizon_revision = "66f3981f522b24c250b21523a70080965b940424"
+
+# Runtime module in horizon-client-render (shared state, ping helpers).
+[[module]]
+id = "runtime"
+file = "crates/horizon-client-render/src/tab_list.rs"
+name = "better_ping_display"
+source = "runtime.rs"
+
+# ── Tab list ─────────────────────────────────────────────────────────────────
+
+# HEAD: stash player latencies in sorted display order.
+[[injection]]
+id = "tab-layout-head"
+target = "horizon_client_render::tab_list::TabList::layout"
+kind = "HEAD"
+helper = "tab_head.rs"
+bindings = [
+  { name = "tab_i", ty = "&TabInputs<'_>", value = "i" },
+]
+
+# RETURN: replace ping sprites in the returned Vec<GuiDraw> with colored text.
+[[injection]]
+id = "tab-layout-return"
+target = "horizon_client_render::tab_list::TabList::layout"
+kind = "RETURN"
+helper = "tab_return.rs"
+bindings = [
+  { name = "value", ty = "Vec<GuiDraw>", value = "$value" },
+]
+
+# ── Server list ───────────────────────────────────────────────────────────────
+
+# HEAD: pre-compute per-row ping ms map before the draw loop.
+[[injection]]
+id = "server-draw-head"
+target = "horizon_client::multiplayer::Screen::draw"
+kind = "HEAD"
+helper = "server_head.rs"
+bindings = [
+  { name = "screen_self", ty = "&Screen", value = "self" },
+]
+
+# RETURN on draw_server_icon: draw numeric ping text for the row.
+[[injection]]
+id = "server-icon-return"
+target = "horizon_client::multiplayer::draw_server_icon"
+kind = "RETURN"
+helper = "server_return.rs"
+bindings = [
+  { name = "value", ty = "()", value = "$value" },
+  { name = "atlas", ty = "&HudAtlas", value = "atlas" },
+  { name = "batch", ty = "&mut HudBatch", value = "batch" },
+  { name = "slot", ty = "usize", value = "slot" },
+  { name = "x", ty = "f32", value = "x" },
+  { name = "y", ty = "f32", value = "y" },
+]
+
+# ── Settings ──────────────────────────────────────────────────────────────────
+
+[[injection]]
+id = "settings-buttons"
+hook = "settings"
+hook_version = 1
+kind = "HEAD"
+helper = "settings.rs"
+bindings = [
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "buttons", ty = "&mut Vec<String>", value = "buttons" },
+]
+
+[[injection]]
+id = "settings-click"
+hook = "settings_click"
+hook_version = 1
+kind = "HEAD"
+helper = "settings_click.rs"
+bindings = [
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "button", ty = "usize", value = "button" },
+]
