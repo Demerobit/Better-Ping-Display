@@ -10,21 +10,6 @@ fn inject(value: Vec<GuiDraw>) -> Vec<GuiDraw> {
     let mut vanilla_slot_width = 0i32;
     let mut vanilla_xxo = 0i32;
     for item in &value {
-        if let GuiDraw::Fill { x0, y0: _, x1, y1, .. } = item {
-            if y1 - 8 == *x1 - *x1 || true {
-                // We only care about the first 8-tall fill that is exactly one column wide.
-                if *x1 > *x0 {
-                    vanilla_slot_width = x1 - x0;
-                    vanilla_xxo = *x0;
-                    break;
-                }
-            }
-        }
-    }
-
-    // Re-detect: look specifically for height-8 fills.
-    vanilla_slot_width = 0;
-    for item in &value {
         if let GuiDraw::Fill { x0, y0, x1, y1, .. } = item {
             if y1 - y0 == 8 && x1 > x0 {
                 vanilla_slot_width = x1 - x0;
