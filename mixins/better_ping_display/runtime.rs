@@ -1,5 +1,5 @@
 // Better Ping Display runtime module
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 pub static SHOW_SERVER_PING: AtomicBool = AtomicBool::new(true);
@@ -18,12 +18,12 @@ thread_local! {
     pub static TAB_PINGS: RefCell<Vec<(i32, i32)>> = RefCell::new(Vec::new());
     pub static TAB_INFO: RefCell<TabLayoutInfo> = RefCell::new(TabLayoutInfo::default());
 
-    // Server list: (slot, ms)
-    pub static SERVER_ROW_PINGS: RefCell<Vec<Option<i32>>> = RefCell::new(Vec::new());
-    // (cy, ms)
-    pub static SERVER_CY_PINGS: RefCell<Vec<(f32, i32)>> = RefCell::new(Vec::new());
-    // (cy + 1.0, shift)
-    pub static SERVER_SHIFTS: RefCell<Vec<(f32, f32)>> = RefCell::new(Vec::new());
+    // Server list: per-server ping values from Screen::List
+    pub static SERVER_ROW_PINGS: RefCell<Vec<i32>> = RefCell::new(Vec::new());
+    // Current server ping being rendered
+    pub static CURRENT_ROW_PING: Cell<i32> = Cell::new(-1);
+    // Shift for player count on the current row (consumed immediately by text_styled)
+    pub static CURRENT_ROW_SHIFT: Cell<f32> = Cell::new(0.0);
 }
 
 pub fn ping_color(ms: i32) -> u32 {
@@ -74,44 +74,10 @@ pub fn set_tab_layout_info(
     });
 }
 
-// ── Server list sizing & positioning ────────────────────────────────────────
-
-pub fn record_server_cy_ping(cy: f32, ms: i32) {
-    SERVER_CY_PINGS.with(|cell| {
-        cell.borrow_mut().push((cy, ms));
-    });
-}
-
-pub fn lookup_server_ping(cy: f32) -> i32 {
-    SERVER_CY_PINGS.with(|cell| {
-        for (stashed_cy, ms) in cell.borrow().iter() {
-            if (*stashed_cy - cy).abs() < 2.0 {
-                return *ms;
-            }
-        }
-        -1
-    })
-}
-
-pub fn record_server_shift(y: f32, shift: f32) {
-    SERVER_SHIFTS.with(|cell| {
-        cell.borrow_mut().push((y, shift));
-    });
-}
-
-pub fn lookup_server_shift(y: f32) -> f32 {
-    SERVER_SHIFTS.with(|cell| {
-        for (stashed_y, shift) in cell.borrow().iter() {
-            if (*stashed_y - y).abs() < 1.0 {
-                return *shift;
-            }
-        }
-        0.0
-    })
-}
+// ── Server list cleanup ─────────────────────────────────────────────────────
 
 pub fn clear_server_pings() {
     SERVER_ROW_PINGS.with(|cell| cell.borrow_mut().clear());
-    SERVER_CY_PINGS.with(|cell| cell.borrow_mut().clear());
-    SERVER_SHIFTS.with(|cell| cell.borrow_mut().clear());
+    CURRENT_ROW_PING.with(|cell| cell.set(-1));
+    CURRENT_ROW_SHIFT.with(|cell| cell.set(0.0));
 }
