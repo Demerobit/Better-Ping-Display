@@ -16,7 +16,7 @@ visibility = "pub"
 
 # ── Tab list ─────────────────────────────────────────────────────────────────
 
-# HEAD: stash player latencies in sorted display order.
+# HEAD: measure ping text widths and stash layout info.
 [[injection]]
 id = "tab-layout-head"
 target = "horizon_client_render::tab_list::TabList::layout"
@@ -24,9 +24,10 @@ kind = "HEAD"
 helper = "tab_head.rs"
 bindings = [
   { name = "tab_i", ty = "&TabInputs<'_>", value = "i" },
+  { name = "font", ty = "&Font", value = "font" },
 ]
 
-# RETURN: replace ping sprites in the returned Vec<GuiDraw> with colored text.
+# RETURN: size columns and replace ping sprites with right-aligned numeric text.
 [[injection]]
 id = "tab-layout-return"
 target = "horizon_client_render::tab_list::TabList::layout"
@@ -75,6 +76,22 @@ bindings = [
   { name = "w", ty = "f32", value = "w" },
   { name = "h", ty = "f32", value = "h" },
   { name = "color", ty = "u32", value = "color" },
+]
+
+# OVERWRITE on HudBatch::text_styled: shift server player count left if ping text expanded.
+[[injection]]
+id = "server-text-styled-overwrite"
+target = "horizon_client_render::hud::HudBatch::text_styled"
+kind = "OVERWRITE"
+helper = "text_styled.rs"
+bindings = [
+  { name = "batch", ty = "&mut HudBatch", value = "self" },
+  { name = "atlas", ty = "&HudAtlas", value = "atlas" },
+  { name = "text", ty = "&crate::text::Text", value = "text" },
+  { name = "x", ty = "f32", value = "x" },
+  { name = "y", ty = "f32", value = "y" },
+  { name = "color", ty = "u32", value = "color" },
+  { name = "shadow", ty = "bool", value = "shadow" },
 ]
 
 # ── Settings ──────────────────────────────────────────────────────────────────

@@ -5,14 +5,15 @@ fn inject(screen_self: &Screen) {
         return;
     }
     if let Screen::List { servers, pings, .. } = screen_self {
-        let pings = pings.lock().unwrap();
-        let row_pings: Vec<Option<i32>> = servers
-            .iter()
-            .map(|server| match pings.get(&server.ip) {
-                Some(Ping::Ok { ms, .. }) => Some(i32::try_from(*ms).unwrap_or(i32::MAX)),
-                _ => None,
-            })
-            .collect();
+        let mut row_pings = Vec::with_capacity(servers.len());
+        for s in servers {
+            let ping = match pings.get(&s.ip) {
+                Some(Ping::Ok { ms, .. }) => Some(*ms),
+                Some(_) => Some(-1),
+                None => None,
+            };
+            row_pings.push(ping);
+        }
         horizon_client_render::better_ping_display::SERVER_ROW_PINGS.with(|cell| {
             *cell.borrow_mut() = row_pings;
         });
