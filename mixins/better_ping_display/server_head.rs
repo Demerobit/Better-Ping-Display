@@ -5,10 +5,11 @@ fn inject(screen_self: &Screen) {
         return;
     }
     if let Screen::List { servers, pings, .. } = screen_self {
+        let pings = pings.lock().unwrap();
         let mut row_pings = Vec::with_capacity(servers.len());
         for s in servers {
             let ping = match pings.get(&s.ip) {
-                Some(Ping::Ok { ms, .. }) => Some(*ms),
+                Some(Ping::Ok { ms, .. }) => Some(ms as i32),
                 Some(_) => Some(-1),
                 None => None,
             };
